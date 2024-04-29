@@ -1,18 +1,22 @@
 #!/bin/bash -xe
 
 # Setpassword & DB Variables
-DBName='DB_NAME'
-DBUser='DB_USER'
-DBPassword='DB_PASSWORD'
-DBRootPassword='DB_PASSWORD'
-#DBEndpoint='RDS_DB_ENDPOINT'
+DBName='db'
+DBUser='admin'
+DBPassword='vivek2024'
+DBRootPassword='vivek2024'
+DBEndpoint='database-1.c3gmqaaskaqf.ap-south-1.rds.amazonaws.com'
 
 # System Updates
-yum -y update
-yum -y upgrade
+apt -y update
+apt -y upgrade
 
 # STEP 2 - Install system software - including Web and DB
-yum install -y mariadb-server httpd
+sudo apt install apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2
+sudo apt install mariadb-server mariadb-client
+sudo systemctl enable --now mariadb
 amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
 
 # STEP 3 - Web and DB Servers Online - and set to startup
@@ -37,7 +41,7 @@ cp ./wp-config-sample.php ./wp-config.php
 sed -i "s/'database_name_here'/'$DBName'/g" wp-config.php
 sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
 sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
-#sed -i "s/'localhost'/'$DBEndpoint'/g" wp-config.php
+sed -i "s/'localhost'/'$DBEndpoint'/g" wp-config.php
 # Step 6a - permissions 
 usermod -a -G apache ec2-user   
 chown -R ec2-user:apache /var/www
